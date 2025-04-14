@@ -28,7 +28,8 @@ CUDA-compatible GPU (optional, for faster inference)
 Installation
 
 Clone this repository
-bash git clone https://github.com/coder123509/pothole-detection.git
+bash git clone https://github.com/coder123509/AI-POTHOLE-INSPECTION.git
+
 cd pothole-detection
 
 Install dependencies
