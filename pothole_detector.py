@@ -12,7 +12,6 @@ from threading import Thread
 import queue
 import textwrap
 
-# Set page configuration
 st.set_page_config(
     page_title="RoadGuardian: AI Pothole Detection",
     page_icon="🛣️",
@@ -24,44 +23,44 @@ st.set_page_config(
 st.markdown("""
 <style>
     .main-header {
-        font-size: 2.5rem;
-        color: #2c3e50;
+        font-size: 3.5rem;
+        color: #2d5f91;
         text-align: center;
         margin-bottom: 1rem;
     }
     .sub-header {
         font-size: 1.5rem;
-        color: #34495e;
+        color: #424f5c;
         margin-bottom: 1rem;
     }
     .success-box {
-        background-color: #d4edda;
-        color: #155724;
+        background-color: #c0e6ae;
+        color: #0e7526;
         padding: 1rem;
-        border-radius: 0.5rem;
+        border-radius: 0.65rem;
         margin-bottom: 1rem;
     }
     .info-box {
-        background-color: #d1ecf1;
-        color: #0c5460;
+        background-color: #7de6fa;
+        color: #054f5c;
         padding: 1rem;
-        border-radius: 0.5rem;
+        border-radius: 0.65rem;
         margin-bottom: 1rem;
     }
     .metric-container {
-        background-color: #f8f9fa;
-        border-radius: 0.5rem;
+        background-color: #e8f1fa;
+        border-radius: 0.65rem;
         padding: 1rem;
         margin-bottom: 1rem;
         text-align: center;
     }
     .metric-value {
-        font-size: 1.8rem;
+        font-size: 2.4rem;
         font-weight: bold;
         color: #2c3e50;
     }
     .metric-label {
-        font-size: 1rem;
+        font-size: 1.2rem;
         color: #7f8c8d;
     }
 </style>
@@ -73,6 +72,18 @@ def load_model(model_path, conf_threshold=0.25):
     model = torch.hub.load('yolov5', 'custom', path=model_path, source='local')
     model.conf = conf_threshold
     return model
+
+
+
+
+@st.cache_resource
+def load_model(model_path, conf_threshold=0.25):
+    """Load YOLOv5 model and cache it for performance"""
+    model = torch.hub.load('yolov5', 'custom', path=model_path, source='local')
+    model.conf = conf_threshold
+    return model
+# Add this function at the appropriate location in your code
+
 
 def process_image(model, image, conf_threshold=0.25):
     """Process a single image and return results"""
@@ -461,20 +472,20 @@ def main():
                     
                     html_content=textwrap.dedent(f"""
                     <div style="background-color: {color}20; border-left: 5px solid {color}; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-                        <h3 style="color: {color}; margin-top: 0;">Road Condition: {condition}</h3>
-                        <p><strong>Analysis Summary:</strong><br>
-                        • Total potholes detected: {len(detections)}<br>
+                        <h3 style="color: {color}; margin-top: 0;">Road Condition: {condition}
+                        Analysis Summary:
+                        • Total potholes detected: {len(detections)}
                         • Size distribution: {size_distribution["Small"]} small, {size_distribution["Medium"]} medium, {size_distribution["Large"]} large<br>
-                        • Road area affected: {coverage_percent:.2f}% of visible surface<br>
-                        • Detection confidence: {max_confidence:.2f} (highest)</p>
+                        • Road area affected: {coverage_percent:.2f}% of visible surface
+                        • Detection confidence: {max_confidence:.2f} (highest)
                         
-                        <p><strong>Description:</strong><br>{description}</p>
+                        Description:{description}
                         
-                        <p><strong>Potential Impact:</strong><br>{impact}</p>
+                        Potential Impact:{impact}
                         
-                        <p><strong>Recommended Action:</strong><br>{recommendation}</p>
+                        Recommended Action:{recommendation}
                         
-                        <p><strong>Maintenance Priority:</strong><br>{priority}</p>
+                        Maintenance Priority:{priority}
                     </div>
                     """)
                     st.markdown(html_content, unsafe_allow_html=True)
@@ -540,7 +551,7 @@ def main():
                     
                     col1, col2, col3 = st.columns(3)
                     with col1:
-                        st.metric("Estimated Repair Cost", f"${total_cost}")
+                        st.metric("Estimated Repair Cost", f"₹{total_cost}")
                     with col2:
                         st.metric("Estimated Repair Time", estimated_time)
                     with col3:
@@ -561,11 +572,20 @@ def main():
                 else:
                     st.success("No potholes detected in this image. The road appears to be in good condition.")
     
-    # Video Analysis Tab
+   # Replace your existing Video Analysis Tab section with this updated version:
     with tabs[1]:
         st.markdown('<div class="sub-header">Upload a video to analyze road conditions</div>', unsafe_allow_html=True)
         
         uploaded_file = st.file_uploader("Choose a video...", type=["mp4", "avi", "mov"])
+        
+        # Add processing options for performance
+        with st.expander("Processing Options"):
+            sample_rate = st.slider("Frame Sampling Rate", 
+                                min_value=1, max_value=10, value=2, 
+                                help="Process 1 out of every N frames. Higher values = faster processing but less detailed analysis.")
+            resolution_scale = st.slider("Resolution Scale", 
+                                    min_value=0.25, max_value=1.0, value=0.5, step=0.25,
+                                    help="Scale the video resolution. Lower values = faster processing but may reduce accuracy.")
         
         if uploaded_file is not None:
             # Save uploaded video to a temporary file
@@ -578,7 +598,6 @@ def main():
             
             # Process button
             if st.button("🎬 Analyze Video"):
-                # Process the video with progress tracking
                 st.markdown("### 🔄 Processing Video")
                 st.warning("This may take a while depending on video length...")
                 
@@ -586,49 +605,306 @@ def main():
                 progress_bar = st.progress(0)
                 status_text = st.empty()
                 
-                # Create a callback for progress updates
-                def update_progress(progress, status):
-                    progress_bar.progress(progress)
-                    status_text.text(status)
-                
-                # Create output path
+                # Output path
                 output_path = os.path.splitext(video_path)[0] + "_detected.mp4"
                 
-                # Process video
                 try:
-                    result_path, stats = process_video(model, video_path, conf_threshold, output_path, update_progress)
+                    # Open video capture
+                    cap = cv2.VideoCapture(video_path)
+                    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                    fps = cap.get(cv2.CAP_PROP_FPS)
+                    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
                     
-                    if result_path:
-                        st.success("✅ Video processing complete!")
-                        
-                        # Display processed video
-                        st.subheader("🎦 Processed Video")
-                        st.video(result_path)
-                        
-                        # Display analytics
-                        display_video_analytics(stats)
+                    # Apply resolution scaling for faster processing
+                    new_width = int(width * resolution_scale)
+                    new_height = int(height * resolution_scale)
                     
+                    # Set up video writer
+                    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                    writer = cv2.VideoWriter(output_path, fourcc, fps/sample_rate, (width, height))
+                    
+                    # Variables to track statistics
+                    frame_count = 0
+                    processed_count = 0
+                    pothole_counts = []
+                    processing_times = []
+                    total_potholes = 0
+                    frames_with_potholes = 0
+                    severity_levels = {
+                        "Low": 0,     # Small potholes
+                        "Medium": 0,  # Medium potholes
+                        "High": 0     # Large potholes
+                    }
+                    
+                    # Check first frame to verify if it's a road
+                    ret, first_frame = cap.read()
+                    if not ret:
+                        st.error("Failed to read video file")
+                        raise ValueError("Cannot read video file")
+                    
+                   
+                    # Reset video capture to start
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                    
+                    # Process the video
+                    while cap.isOpened():
+                        ret, frame = cap.read()
+                        if not ret:
+                            break
+                        
+                        # Process only every N frames based on sample_rate
+                        if frame_count % sample_rate == 0:
+                            processed_count += 1
+                            
+                            # Resize frame for faster processing if scaling is applied
+                            if resolution_scale < 1.0:
+                                processed_frame = cv2.resize(frame, (new_width, new_height))
+                            else:
+                                processed_frame = frame
+                            
+                            # Process frame
+                            start_time = time.time()
+                            results = model(processed_frame)
+                            processing_time = time.time() - start_time
+                            processing_times.append(processing_time)
+                            
+                            # Get detections
+                            detections = results.xyxy[0].cpu().numpy()
+                            num_potholes = len(detections)
+                            pothole_counts.append(num_potholes)
+                            total_potholes += num_potholes
+                            
+                            if num_potholes > 0:
+                                frames_with_potholes += 1
+                                
+                                # Classify severity based on bounding box size
+                                for det in detections:
+                                    x1, y1, x2, y2, conf, cls = det
+                                    area = (x2 - x1) * (y2 - y1)
+                                    area_percentage = area / (new_width * new_height)
+                                    
+                                    if area_percentage < 0.01:
+                                        severity_levels["Low"] += 1
+                                    elif area_percentage < 0.05:
+                                        severity_levels["Medium"] += 1
+                                    else:
+                                        severity_levels["High"] += 1
+                            
+                            # Render results on original sized frame
+                            if resolution_scale < 1.0:
+                                # Scale detections back to original size
+                                scaled_detections = []
+                                scale_x = width / new_width
+                                scale_y = height / new_height
+                                
+                                for det in detections:
+                                    x1, y1, x2, y2, conf, cls = det
+                                    scaled_det = [
+                                        x1 * scale_x, y1 * scale_y, 
+                                        x2 * scale_x, y2 * scale_y,
+                                        conf, cls
+                                    ]
+                                    scaled_detections.append(scaled_det)
+                                
+                                # Draw on original frame
+                                annotated_frame = frame.copy()
+                                for det in scaled_detections:
+                                    x1, y1, x2, y2, conf, cls = det
+                                    # Draw rectangle
+                                    cv2.rectangle(annotated_frame, 
+                                                (int(x1), int(y1)), 
+                                                (int(x2), int(y2)), 
+                                                (0, 255, 0), 2)
+                                    # Add label
+                                    label = f"Pothole: {conf:.2f}"
+                                    cv2.putText(annotated_frame, label, 
+                                            (int(x1), int(y1) - 10), 
+                                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                            else:
+                                # Use rendered frame from model
+                                annotated_frame = results.render()[0]
+                            
+                            # Add text with detection stats
+                            cv2.putText(annotated_frame, f"Potholes: {num_potholes}", (10, 30), 
+                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                            cv2.putText(annotated_frame, f"FPS: {1/max(processing_time, 0.001):.1f}", (10, 70), 
+                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                            
+                            # Write to output video
+                            writer.write(annotated_frame)
+                        
+                        # Update progress
+                        frame_count += 1
+                        progress = min(frame_count / total_frames, 1.0)
+                        status_text.text(f"Processing frame {frame_count}/{total_frames} | Potholes detected: {total_potholes}")
+                        progress_bar.progress(progress)
+                    
+                    # Release resources
+                    cap.release()
+                    writer.release()
+                    
+                    # Prepare statistics
+                    stats = {
+                        'total_frames': frame_count,
+                        'processed_frames': processed_count,
+                        'frames_with_potholes': frames_with_potholes,
+                        'pothole_frame_percentage': (frames_with_potholes / max(processed_count, 1)) * 100,
+                        'total_potholes': total_potholes,
+                        'avg_potholes_per_frame': total_potholes / max(processed_count, 1),
+                        'avg_processing_time': sum(processing_times) / max(len(processing_times), 1),
+                        'avg_fps': 1 / max(sum(processing_times) / max(len(processing_times), 1), 0.001),
+                        'severity_levels': severity_levels,
+                        'pothole_counts': pothole_counts
+                    }
+                    
+                    st.success("✅ Video processing complete!")
+                    
+                    # Display processed video
+                    st.subheader("🎦 Processed Video")
+                    st.video(output_path)
+                    
+                    # Display analytics
+                    display_video_analytics(stats)
+                    
+                    # Enhanced Road Condition Assessment for video
+                    st.subheader("🔍 Detailed Road Analysis")
+                    
+                    # Detailed size classification from stats
+                    size_distribution = {
+                        "Small": severity_levels["Low"],
+                        "Medium": severity_levels["Medium"],
+                        "Large": severity_levels["High"]
+                    }
+                    
+                    # Estimate affected area
+                    total_road_frames = processed_count
+                    avg_potholes_per_frame = stats['avg_potholes_per_frame']%frames_with_potholes
+                    road_condition_percent = min(100, (frames_with_potholes / max(total_road_frames, 1)) * 100)
+                    
+                    # Advanced condition assessment
+                    if size_distribution["Large"] > 10 or stats['total_potholes'] > 50:
+                        condition = "Critical"
+                        color = "#d9534f"  # Red
+                        description = "This road section has severe damage with large potholes appearing frequently throughout the footage."
+                        impact = "High risk of vehicle damage and potential safety hazard, especially during poor weather conditions."
+                        recommendation = "Immediate repair recommended. Area should be marked with hazard signs until repairs are completed."
+                        priority = "High - Schedule repair within 24-48 hours"
+                        
+                    elif size_distribution["Large"] > 5 or size_distribution["Medium"] > 20 or stats['total_potholes'] > 30:
+                        condition = "Poor"
+                        color = "#f0ad4e"  # Orange
+                        description = "Significant road deterioration with multiple medium to large potholes throughout the video."
+                        impact = "Moderate risk of vehicle damage and reduced driving comfort. May require drivers to slow down or navigate around defects."
+                        recommendation = "Prompt repair needed to prevent further degradation. Consider temporary patching if permanent repair is delayed."
+                        priority = "Medium - Schedule repair within 1 week"
+                        
+                    elif size_distribution["Medium"] > 10 or size_distribution["Small"] > 20 or stats['total_potholes'] > 15:
+                        condition = "Fair"
+                        color = "#5bc0de"  # Blue
+                        description = "Early signs of road deterioration with mostly small to medium potholes appearing periodically."
+                        impact = "Minor impact on driving experience, but potential for rapid worsening if left untreated."
+                        recommendation = "Plan for maintenance in the near future. Monitor for expansion of existing potholes."
+                        priority = "Low - Include in regular maintenance schedule"
+                        
+                    else:
+                        condition = "Good"
+                        color = "#5cb85c"  # Green
+                        description = "Minimal road damage with only a few small potholes detected throughout the video."
+                        impact = "Negligible impact on driving experience and vehicle condition."
+                        recommendation = "Routine maintenance should be sufficient. Monitor during seasonal inspections."
+                        priority = "Very Low - No immediate action required"
+                    
+                    # Display detailed assessment card
+                    st.markdown(f"""
+                    <div style="background-color: {color}20; border-left: 5px solid {color}; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                        <h3 style="color: {color}; margin-top: 0;">Road Condition: {condition}</h3>
+                        Analysis Summary:
+                        • Total potholes detected: {stats['total_potholes']}<br>
+                        • Size distribution: {size_distribution["Small"]} small, {size_distribution["Medium"]} medium, {size_distribution["Large"]} large<br>
+                        • Road condition issues in: {road_condition_percent:.1f}% of the video
+                        • Average potholes per analyzed frame: {avg_potholes_per_frame:.2f}
+                        
+                        Description:{description}
+                        
+                        Potential Impact:{impact}
+                        
+                        Recommended Action:{recommendation}
+                        
+                        Maintenance Priority:{priority}
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Potential repair cost estimate
+                    st.subheader("Estimated Repair Information in rupees")
+                    
+                    # Calculate rough repair cost based on pothole sizes
+                    small_repair_cost = size_distribution["Small"] * 816
+                    medium_repair_cost = size_distribution["Medium"] * 1200
+                    large_repair_cost = size_distribution["Large"] * 2000
+                    total_cost = small_repair_cost + medium_repair_cost + large_repair_cost
+                    
+                    # Estimate repair time
+                    if condition == "Critical":
+                        estimated_time = "1-2 days"
+                        crew_size = "4-6 workers"
+                    elif condition == "Poor":
+                        estimated_time = "4-8 hours"
+                        crew_size = "3-4 workers"
+                    elif condition == "Fair":
+                        estimated_time = "2-4 hours"
+                        crew_size = "2-3 workers"
+                    else:
+                        estimated_time = "Under 2 hours"
+                        crew_size = "1-2 workers"
+                    
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric("Estimated Repair Cost", f"₹{total_cost}")
+                    with col2:
+                        st.metric("Estimated Repair Time", estimated_time)
+                    with col3:
+                        st.metric("Recommended Crew Size", crew_size)
+                    
+                    # Materials estimate
+                    road_length_estimate = "unknown"
+                    if "road length" in uploaded_file.name.lower():
+                        # Try to extract road length from filename if provided
+                        try:
+                            import re
+                            match = re.search(r'(\d+)m', uploaded_file.name.lower())
+                            if match:
+                                road_length_estimate = f"{match.group(1)} meters"
+                        except:
+                            pass
+                    
+                    st.markdown(f"""
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;">
+                        <h4 style="margin-top: 0;">Estimated Materials Required:</h4>
+                        <ul>
+                            <li><strong>Asphalt Mix:</strong> {total_potholes * 0.5:.1f} cubic feet</li>
+                            <li><strong>Asphalt Sealant:</strong> {total_potholes * 0.2:.1f} gallons</li>
+                            <li><strong>Equipment:</strong> {'Heavy machinery (bobcat/roller)' if condition in ['Critical', 'Poor'] else 'Hand tools and compactor'}</li>
+                            <li><strong>Estimated Road Section:</strong> {road_length_estimate}</li>
+                        </ul>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                except ValueError as ve:
+                    if "Not a road video" in str(ve):
+                        # Error already displayed
+                        pass
+                    else:
+                        st.error(f"Error processing video: {ve}")
                 except Exception as e:
                     st.error(f"Error processing video: {e}")
                 
                 finally:
-                    # Clean up temporary files
                     try:
                         os.unlink(video_path)
                     except:
                         pass
 
-   
-
-    st.markdown("...")
-    st.markdown(
-        """
-        <div style="text-align: center; color: #7f8c8d; font-size: 0.8rem;">
-            Developed for the Hackathon | Source code available on request
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
 
 if __name__ == "__main__":
     main()
