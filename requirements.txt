@@ -9,9 +9,6 @@ numpy==1.24.4
 streamlit==1.44.1
 matplotlib==3.9.4
 
-# Optional utility libraries 
-tqdm==4.67.1
-PyYAML==6.0.2
 
 
 
