@@ -3,7 +3,7 @@ torch==2.6.0
 torchvision==0.21.0
 ultralytics==8.3.107
 opencv-python-headless==4.6.0.66
-numpy==1.24.4
+numpy>=1.26.4
 
 # Web UI
 streamlit==1.44.1
