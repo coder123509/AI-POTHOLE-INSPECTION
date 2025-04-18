@@ -24,44 +24,44 @@ st.set_page_config(
 st.markdown("""
 <style>
     .main-header {
-        font-size: 2.5rem;
-        color: #2c3e50;
+        font-size: 3.5rem;
+        color: #2d5f91;
         text-align: center;
         margin-bottom: 1rem;
     }
     .sub-header {
         font-size: 1.5rem;
-        color: #34495e;
+        color: #424f5c;
         margin-bottom: 1rem;
     }
     .success-box {
-        background-color: #d4edda;
-        color: #155724;
+        background-color: #c0e6ae;
+        color: #0e7526;
         padding: 1rem;
-        border-radius: 0.5rem;
+        border-radius: 0.65rem;
         margin-bottom: 1rem;
     }
     .info-box {
-        background-color: #d1ecf1;
-        color: #0c5460;
+        background-color: #7de6fa;
+        color: #054f5c;
         padding: 1rem;
-        border-radius: 0.5rem;
+        border-radius: 0.65rem;
         margin-bottom: 1rem;
     }
     .metric-container {
-        background-color: #f8f9fa;
-        border-radius: 0.5rem;
+        background-color: #e8f1fa;
+        border-radius: 0.65rem;
         padding: 1rem;
         margin-bottom: 1rem;
         text-align: center;
     }
     .metric-value {
-        font-size: 1.8rem;
+        font-size: 2.4rem;
         font-weight: bold;
         color: #2c3e50;
     }
     .metric-label {
-        font-size: 1rem;
+        font-size: 1.2rem;
         color: #7f8c8d;
     }
 </style>
@@ -235,7 +235,7 @@ def display_video_analytics(stats):
     severities = stats['severity_levels']
     ax.bar(['Low', 'Medium', 'High'], 
            [severities['Low'], severities['Medium'], severities['High']],
-           color=['#3498db', '#f39c12', '#e74c3c'])
+           color=['#34db16', '#dbad14', '#e81e09'])
     ax.set_ylabel('Count')
     ax.set_title('Pothole Severity Distribution')
     st.pyplot(fig)
@@ -459,25 +459,34 @@ def main():
                     
                     # Display detailed assessment card
                     
-                    html_content=textwrap.dedent(f"""
+                   
+
+                    description = str(description)
+                    impact = str(impact)
+                    recommendation = str(recommendation)
+                    priority = str(priority)
+
+                    html_content = f"""
                     <div style="background-color: {color}20; border-left: 5px solid {color}; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
                         <h3 style="color: {color}; margin-top: 0;">Road Condition: {condition}</h3>
                         <p><strong>Analysis Summary:</strong><br>
                         • Total potholes detected: {len(detections)}<br>
-                        • Size distribution: {size_distribution["Small"]} small, {size_distribution["Medium"]} medium, {size_distribution["Large"]} large<br>
+                        • Size distribution: {size_distribution['Small']} small, {size_distribution['Medium']} medium, {size_distribution['Large']} large<br>
                         • Road area affected: {coverage_percent:.2f}% of visible surface<br>
                         • Detection confidence: {max_confidence:.2f} (highest)</p>
-                        
-                        <p><strong>Description:</strong><br>{description}</p>
-                        
-                        <p><strong>Potential Impact:</strong><br>{impact}</p>
-                        
-                        <p><strong>Recommended Action:</strong><br>{recommendation}</p>
-                        
-                        <p><strong>Maintenance Priority:</strong><br>{priority}</p>
+
+                        Description:{description}
+
+                        Potential Impact:{impact}
+
+                        Recommended Action:{recommendation}
+
+                        Maintenance Priority:{priority}
                     </div>
-                    """)
+                    """
+
                     st.markdown(html_content, unsafe_allow_html=True)
+
                     
                     # Visualization: Pothole distribution map
                     st.subheader("📊 Pothole Distribution Map")
@@ -540,7 +549,7 @@ def main():
                     
                     col1, col2, col3 = st.columns(3)
                     with col1:
-                        st.metric("Estimated Repair Cost", f"${total_cost}")
+                        st.metric("Estimated Repair Cost", f"Rs.{total_cost}")
                     with col2:
                         st.metric("Estimated Repair Time", estimated_time)
                     with col3:
@@ -548,7 +557,7 @@ def main():
                     
                     # Materials estimate
                     st.markdown(f"""
-                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;">
+                    <div style="background-color: #26292e; padding: 15px; border-radius: 5px; margin-top: 10px;">
                         <h4 style="margin-top: 0;">Estimated Materials Required:</h4>
                         <ul>
                             <li><strong>Asphalt Mix:</strong> {total_area/1000:.1f} cubic feet</li>
