@@ -125,11 +125,7 @@ Live webcam support is planned for a future release.
 
 ---
 
-## 📸 Sample Screenshots
 
-_Add sample image/video outputs here if desired._
-
----
 
 ## 👨‍💼 Authors
 
