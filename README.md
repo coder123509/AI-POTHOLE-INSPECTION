@@ -19,7 +19,7 @@ A deep learning-based system that automatically detects potholes in uploaded ima
 ```
 AI-POTHOLE-INSPECTION/
                   
-├── pothole_detector.py     # Core detection script+streamlit-web-interface
+├── app.py     # Core detection script+streamlit-web-interface
 ├── requirements.txt        # Dependencies
 ├── models/                 # Trained YOLOv5 model weights
 │   └── best.pt
