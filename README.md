@@ -18,8 +18,8 @@ A deep learning-based system that automatically detects potholes in uploaded ima
 
 ```
 AI-POTHOLE-INSPECTION/
-├── app.py                  # Streamlit web app
-├── pothole_detector.py     # Core detection script
+                  
+├── pothole_detector.py     # Core detection script+streamlit-web-interface
 ├── requirements.txt        # Dependencies
 ├── models/                 # Trained YOLOv5 model weights
 │   └── best.pt
@@ -89,7 +89,7 @@ conda activate pothole-env
 
 Launch the app:
 ```bash
-streamlit run app.py
+streamlit run pothole_detector.py
 ```
 
 #### Web App Features:
@@ -97,19 +97,7 @@ streamlit run app.py
 - Upload videos for analysis
 - Get visual feedback, pothole stats, and road severity level
 
-### 🧪 Command Line Usage
 
-For advanced users or batch automation:
-
-```bash
-# Detect potholes in an image
-python pothole_detector.py --source path/to/image.jpg --output results/output.jpg
-
-# Detect potholes in a video
-python pothole_detector.py --source path/to/video.mp4 --output results/output.mp4
-```
-
----
 
 ## 🔍 Future Roadmap
 
