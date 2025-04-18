@@ -1,6 +1,6 @@
 torch
 torchvision
-opencv-python
+opencv-python==4.11.0
 numpy
 matplotlib
 streamlit
