@@ -1,101 +1,151 @@
-**Pothole Detection System**
-A deep learning-based system that automatically detects potholes in images and videos using YOLOv5 and computer vision techniques.
+# 🕳️ AI-Pothole-Inspection
 
+A deep learning-based system that automatically detects potholes in uploaded images and videos using **YOLOv5** and computer vision techniques. This project is powered by a lightweight yet powerful model and presented through an intuitive **Streamlit** interface.
 
-**🚀 Features**
-Real-time pothole detection in images and videos
-Interactive Streamlit web interface for easy interaction
-Advanced analytics and visualization of detection results
-Severity classification of detected potholes
-Road condition assessment and recommendations
+---
 
-**📋 Project Structure**
-pothole-detection/
-├── app.py                     # Streamlit web application
-├── pothole_detector.py        # Core detection script
-├── requirements.txt           # Dependencies
-├── models/                    # Trained models
-│   └── best.pt                # YOLOv5 trained weights
-├── data/                      # Dataset directory (not included in repo)
-├── utils/                     # Helper functions
-└── README.md                  # Project documentation
-🛠️ Setup Instructions
-Prerequisites
+## 🚀 Features
 
-Python 3.9+ (tested with Python 3.9.21)
-CUDA-compatible GPU (optional, for faster inference)
+- 📷 Upload and analyze **images** for potholes  
+- 🎥 Process **videos** for pothole detection  
+- 📊 Visual analytics and detection statistics  
+- ⚠️ Severity classification based on pothole size  
+- 🚣️ Road condition assessment and smart recommendations  
 
-Installation
+---
 
-Clone this repository
-bash git clone https://github.com/coder123509/AI-POTHOLE-INSPECTION.git
+## 📁 Project Structure
 
-cd pothole-detection
+```
+AI-POTHOLE-INSPECTION/
+├── app.py                  # Streamlit web app
+├── pothole_detector.py     # Core detection script
+├── requirements.txt        # Dependencies
+├── models/                 # Trained YOLOv5 model weights
+│   └── best.pt
+├── utils/                  # Helper functions
+├── results/                # Output images/videos (generated)
+└── README.md               # Project documentation
+```
 
-Install dependencies
-bashpip install -r requirements.txt
+---
 
-Download the trained model
+## 💪 Setup Instructions
 
-The pre-trained model is included in the models directory
-Alternatively, you can train your own model following the training instructions
+### ✅ Prerequisites
 
+- Python 3.9+ (tested with Python 3.9.21)  
+- CUDA-compatible GPU (optional, for faster inference)
 
+### 📦 Installation
 
-**🖥️ Usage
-Web Interface**
-Run the Streamlit app for a user-friendly interface:
-bashstreamlit run app.py
-**Features:**
+1. Clone the repository  
+```bash
+git clone https://github.com/coder123509/AI-POTHOLE-INSPECTION.git
+cd AI-POTHOLE-INSPECTION
+```
 
-Upload and analyze images
-Process videos for pothole detection
-View detailed analytics and statistics
-Get road condition assessments
+2. Install the required dependencies  
+```bash
+pip install -r requirements.txt
+```
 
-Command Line
-For batch processing or integration into other systems:
-bash# Process an image
+3. (Optional) Create and activate a virtual environment  
+```bash
+conda create -n pothole-env python=3.9
+conda activate pothole-env
+```
+
+---
+
+## 🧠 Model Details
+
+- **Model**: YOLOv5n (nano) – lightweight and fast  
+- **Input size**: 640×640 pixels  
+- **Classes**: Single class - `pothole`
+
+### 📊 Training Info
+
+- **Dataset**: [Kaggle Pothole Detection Dataset](https://www.kaggle.com/datasets)  
+- **Train/Validation Split**: 80/20  
+- **Epochs**: 10  
+- **Batch size**: 16  
+- **Augmentations**: YOLOv5 default pipeline
+
+### 📈 Performance Metrics
+
+| Metric      | Score  |
+|-------------|--------|
+| Precision   | 77.7%  |
+| Recall      | 61.1%  |
+| mAP@0.5     | 72.4%  |
+| mAP@0.5:0.95| 38.7%  |
+
+---
+
+## 💻 Usage
+
+### 🌐 Web Interface (Streamlit)
+
+Launch the app:
+```bash
+streamlit run app.py
+```
+
+#### Web App Features:
+- Upload images for pothole detection
+- Upload videos for analysis
+- Get visual feedback, pothole stats, and road severity level
+
+### 🧪 Command Line Usage
+
+For advanced users or batch automation:
+
+```bash
+# Detect potholes in an image
 python pothole_detector.py --source path/to/image.jpg --output results/output.jpg
 
-# Process a video
+# Detect potholes in a video
 python pothole_detector.py --source path/to/video.mp4 --output results/output.mp4
+```
 
-# Use webcam (0 is default camera)
-python pothole_detector.py --source 0 --output results/webcam_output.mp4
-🧠 Technical Details
-Model Architecture
+---
 
-YOLOv5n (nano) for lightweight deployment
-Input size: 640x640 pixels
-Single class: 'pothole'
+## 🔍 Future Roadmap
 
-**Training Information**
+- 📱 Mobile application version  
+- 🗑️ GPS-based pothole mapping  
+- 📶 Real-time deployment on edge devices  
+- 🧠 Multi-class classification for pothole types  
+- 🏡 Integration with government road monitoring systems  
 
-Dataset: Kaggle Pothole Detection dataset (665 images)
-Training/validation split: 80/20
-Epochs: 10
-Batch size: 16
-Augmentation: Default YOLOv5 augmentation pipeline
+---
 
-**Performance Metrics**
+## 🤝 Built With
 
-Precision: 0.777 (77.7%)
-Recall: 0.611 (61.1%)
-mAP50: 0.724 (72.4%)
-mAP50-95: 0.387 (38.7%)
+- [Ultralytics YOLOv5](https://github.com/ultralytics/yolov5)  
+- [Streamlit](https://streamlit.io)  
+- [OpenCV](https://opencv.org)  
+- [Kaggle Pothole Detection Dataset](https://www.kaggle.com)  
 
-**🔍 Future Improvements**
+---
 
-Mobile application development
-GPS integration for pothole mapping
-Multi-class detection (pothole severity levels)
-Deployment to edge devices for real-time road analysis
-Integration with municipal road maintenance systems
+## 📌 Note
 
+This app currently supports **image and video uploads** only.  
+Live webcam support is planned for a future release.
 
+---
 
+## 📸 Sample Screenshots
 
-Kaggle Pothole Detection Dataset
-Ultralytics YOLOv5
-Streamlit for the web interface
+_Add sample image/video outputs here if desired._
+
+---
+
+## 👨‍💼 Authors
+
+- Abhinav Krishna Rayachoti  
+  
+---
+
