@@ -1,0 +1,5 @@
+train: C:/Users/abhik/webdev/pothole_dataset/images/train
+val: C:/Users/abhik/webdev/pothole_dataset/images/val
+
+nc: 1
+names: ['pothole']
